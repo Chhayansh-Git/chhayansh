@@ -349,6 +349,7 @@
       }
 
       .mobile-only-links {
+        display: block !important;
         border-bottom: none !important;
         padding: 10px 20px;
         position: relative;
@@ -409,8 +410,8 @@
     }
   }
 
-  .mobile-only-links {
-    display: none;
+  .visible-links .mobile-only-links {
+    display: none !important;
   }
 }
 
