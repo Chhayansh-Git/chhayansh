@@ -360,19 +360,24 @@
         }
 
         .follow-toggle {
-          font-size: $type-size-5;
-          padding: 0;
+          display: inline-block;
+          padding: 6px 28px;
           margin: 0;
-          background: none;
-          border: none;
-          color: var(--global-masthead-link-color);
+          font-size: 0.9em;
           font-family: $sans-serif-narrow;
-          font-weight: normal;
+          font-weight: 600;
+          letter-spacing: 0.5px;
+          text-align: center;
           cursor: pointer;
-          text-align: left;
+          border: 2px solid var(--global-base-color);
+          border-radius: 50px;
+          background: transparent;
+          color: var(--global-base-color);
+          transition: all 0.25s ease;
 
           &:hover {
-            color: var(--global-masthead-link-color-hover);
+            background: var(--global-base-color);
+            color: #fff;
           }
         }
 
