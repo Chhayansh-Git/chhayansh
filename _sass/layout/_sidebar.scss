@@ -60,6 +60,70 @@
   }
 }
 
+/*
+   Mobile sidebar behavior
+   ========================================================================== */
+
+/* Hide sidebar on all pages except About on mobile */
+@media screen and (max-width: $sidebar-screen-min-width - 1) {
+  body:not(.page-home) .sidebar {
+    display: none !important;
+  }
+
+  /* Hero-style profile card on About page mobile */
+  body.page-home .sidebar {
+    margin-bottom: 2em;
+
+    [itemscope] {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      position: relative;
+    }
+
+    .author__avatar {
+      width: 180px;
+      display: block;
+      margin: 0 auto;
+
+      img {
+        max-width: 180px;
+        border-radius: 50%;
+        border: 3px solid var(--global-border-color);
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+      }
+    }
+
+    .author__content {
+      display: block;
+      text-align: center;
+      padding: 1em 1.5em;
+      margin-top: -2.5em;
+      position: relative;
+      background: linear-gradient(to top, var(--global-bg-color) 60%, transparent);
+      border-radius: 12px;
+      width: 100%;
+      max-width: 320px;
+
+      .author__name {
+        font-size: 1.3em;
+        font-weight: 700;
+        margin-top: 2em;
+      }
+
+      .author__bio {
+        font-size: 0.85em;
+        line-height: 1.5;
+        opacity: 0.85;
+      }
+    }
+
+    .author__urls-wrapper {
+      display: none;
+    }
+  }
+}
+
 .sidebar__right {
   margin-bottom: 1em;
 
