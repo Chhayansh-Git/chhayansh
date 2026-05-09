@@ -413,6 +413,16 @@
         }
       }
     }
+
+    &:hover .visible-links,
+    &:focus-within .visible-links {
+      display: flex;
+      flex-direction: column;
+      width: 100%;
+      align-items: flex-start;
+      margin-top: 15px;
+      padding: 5px;
+    }
   }
 
   @media (min-width: 925px) {
