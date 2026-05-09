@@ -202,6 +202,10 @@
     display: none;
   }
 
+  .theme-toggle-mobile {
+    display: none;
+  }
+
   @media (max-width: 924px) {
     .site-title--desktop {
       display: none;
@@ -213,6 +217,15 @@
       font-weight: normal;
       line-height: 1.2;
       padding: 0.25rem 0;
+    }
+
+    .theme-toggle-mobile {
+      display: block;
+      margin-left: auto;
+      padding: 0.5rem;
+      color: var(--global-text-color);
+      cursor: pointer;
+      font-size: 1.1em;
     }
   }
 
@@ -351,9 +364,8 @@
         }
       }
 
-      #theme-toggle a {
-        width: auto;
-        justify-content: flex-start;
+      #theme-toggle {
+        display: none !important;
       }
 
       .mobile-only-links {
