@@ -348,17 +348,27 @@
       li {
         width: 100%;
         border-bottom: 1px solid var(--global-border-color);
+        transition: background 0.2s ease;
         
         &:last-child {
           border-bottom: none;
         }
 
+        &:hover {
+          background: var(--global-border-color);
+        }
+
         a {
           margin: 0;
           padding: 10px 20px;
+          transition: color 0.2s ease;
           
           &:before {
             display: none;
+          }
+
+          &:hover {
+            color: var(--global-base-color);
           }
         }
       }
