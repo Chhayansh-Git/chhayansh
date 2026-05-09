@@ -102,8 +102,7 @@ $(document).ready(function () {
   // Enable the theme toggle
   $('#theme-toggle').on('click', toggleTheme);
 
-  // Enable the sticky footer (disabled in favor of CSS flexbox)
-  /*
+  // Enable the sticky footer
   var bumpIt = function () {
     $("body").css("padding-bottom", "0");
     $("body").css("margin-bottom", $(".page__footer").outerHeight(true));
@@ -118,7 +117,6 @@ $(document).ready(function () {
     }}, 250);
   var didResize = false;
   bumpIt();
-  */
 
   // FitVids init
   fitvids();
