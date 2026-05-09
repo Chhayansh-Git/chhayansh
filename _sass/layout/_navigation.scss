@@ -172,6 +172,14 @@
    Priority plus navigation
    ========================================================================== */
 
+@font-face {
+  font-family: 'Lavishly Yours';
+  src: url('/assets/fonts/LavishlyYours-Regular.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+
 .greedy-nav {
   position: relative;
   min-width: 250px;
@@ -188,6 +196,24 @@
     font-weight: 700;
     color: var(--global-text-color);
     text-decoration: none;
+  }
+
+  .site-title--mobile {
+    display: none;
+  }
+
+  @media (max-width: 924px) {
+    .site-title--desktop {
+      display: none;
+    }
+    .site-title--mobile {
+      display: block;
+      font-family: 'Lavishly Yours', cursive;
+      font-size: 1.8rem;
+      font-weight: normal;
+      line-height: 1.2;
+      padding: 0.25rem 0;
+    }
   }
 
   a {
@@ -227,9 +253,6 @@
       vertical-align: middle;
 
       &:first-child {
-        font-weight: bold;
-        text-wrap: wrap;
-
         a {
           margin-left: 0;
         }

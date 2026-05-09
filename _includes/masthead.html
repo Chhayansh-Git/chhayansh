@@ -3,7 +3,8 @@
   <div class="masthead__inner-wrap">
     <div class="masthead__menu">
       <nav id="site-nav" class="greedy-nav">
-        <a class="site-title" href="{{ base_path }}/">{{ site.title }}</a>
+        <a class="site-title site-title--desktop" href="{{ base_path }}/">{{ site.title }}</a>
+        <a class="site-title site-title--mobile" href="{{ base_path }}/">Chhayansh Porwal</a>
         <button><span class="navicon"></span></button>
         <ul class="visible-links">
           {% for link in site.data.navigation.main %}
