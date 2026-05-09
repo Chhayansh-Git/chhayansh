@@ -22,7 +22,8 @@
           </li>
           {% assign author = site.author %}
           <li class="masthead__menu-item mobile-only-links">
-            <div class="nav-social-links">
+            <button class="btn btn--inverse follow-toggle" type="button">Follow</button>
+            <div class="follow-links" style="display:none;">
               {% if author.email %}<a href="mailto:{{ author.email }}"><i class="fas fa-fw fa-envelope"></i> Email</a>{% endif %}
               {% if author.github %}<a href="https://github.com/{{ author.github }}"><i class="fab fa-fw fa-github"></i> GitHub</a>{% endif %}
               {% if author.kaggle %}<a href="https://kaggle.com/{{ author.kaggle }}"><i class="fab fa-fw fa-kaggle"></i> Kaggle</a>{% endif %}

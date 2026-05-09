@@ -102,6 +102,12 @@ $(document).ready(function () {
   // Enable the theme toggle
   $('#theme-toggle').on('click', toggleTheme);
 
+  // Follow button toggle in mobile nav
+  $('.follow-toggle').on('click', function(e) {
+    e.stopPropagation();
+    $(this).next('.follow-links').slideToggle(200);
+  });
+
   // Enable the sticky footer
   var bumpIt = function () {
     $("body").css("padding-bottom", "0");

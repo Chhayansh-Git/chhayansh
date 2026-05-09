@@ -350,12 +350,19 @@
 
       .mobile-only-links {
         border-bottom: none !important;
-        padding: 8px 20px;
+        padding: 10px 20px;
 
-        .nav-social-links {
+        .follow-toggle {
+          font-size: 0.85em;
+          padding: 6px 18px;
+          cursor: pointer;
+        }
+
+        .follow-links {
           display: flex;
           flex-wrap: wrap;
-          gap: 12px;
+          gap: 10px;
+          margin-top: 10px;
 
           a {
             display: inline-flex;
