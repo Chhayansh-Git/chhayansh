@@ -400,14 +400,17 @@
             color: #fff;
             font-weight: 500;
             text-decoration: none;
+            transition: all 0.2s ease;
 
             &:before {
               display: none;
             }
 
             &:hover {
-              opacity: 0.85;
+              background: #fff;
+              color: var(--global-base-color);
               transform: translateY(-1px);
+              box-shadow: 0 2px 6px rgba(0,0,0,0.2);
             }
           }
         }
