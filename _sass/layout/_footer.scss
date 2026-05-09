@@ -7,11 +7,10 @@
   background-color: var(--global-footer-bg-color);
   color: var(--global-text-color-light);
 
-  float: left;
+  flex-shrink: 0;
   margin-left: 0;
   margin-right: 0;
   width: 100%;
-  clear: both;
 
   /* keep footer in normal document flow so custom widgets do not overlap content */
   height: auto;
@@ -90,4 +89,36 @@
       white-space: nowrap;
     }
   }
+}
+
+.footer-wrapper {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  flex-wrap: wrap;
+}
+
+.footer-left {
+  flex: 1;
+}
+
+.footer-right {
+  margin-left: 20px;
+  text-align: right;
+  
+  @media (max-width: 600px) {
+    width: 100%;
+    margin-left: 0;
+    margin-top: 15px;
+    text-align: left;
+  }
+}
+
+.signature {
+  font-family: 'Brush Script MT', 'Lucida Handwriting', cursive;
+  font-size: 2.5em;
+  opacity: 0.6;
+  margin-bottom: 5px;
+  color: var(--global-text-color-light);
+  line-height: 1;
 }
