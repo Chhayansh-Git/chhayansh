@@ -308,16 +308,7 @@
     button {
       display: block;
       margin-left: auto;
-      padding: 18px 20px 28px;
-
-      &::after {
-        content: '';
-        position: absolute;
-        left: 0;
-        bottom: -10px;
-        width: 100%;
-        height: 10px;
-      }
+      padding: 18px 20px;
     }
 
     .visible-links {
@@ -423,20 +414,6 @@
           }
         }
       }
-    }
-
-    button:hover ~ .visible-links,
-    button:focus ~ .visible-links,
-    .visible-links:hover {
-      display: flex;
-      flex-direction: column;
-      width: 100%;
-      align-items: flex-start;
-      padding: 5px;
-    }
-
-    .visible-links.is-closed {
-      display: none !important;
     }
   }
 
