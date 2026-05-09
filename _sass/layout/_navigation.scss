@@ -352,8 +352,7 @@
       .mobile-only-links {
         display: block !important;
         border-bottom: none !important;
-        padding: 10px 20px;
-        position: relative;
+        padding: 0;
 
         &:hover .follow-links,
         &:focus-within .follow-links {
@@ -361,57 +360,56 @@
         }
 
         .follow-toggle {
-          display: inline-block;
-          padding: 6px 28px;
-          margin: 0;
-          font-size: 0.9em;
+          display: block;
+          width: 100%;
+          padding: 12px 0;
+          font-size: 0.95em;
           font-family: $sans-serif-narrow;
           font-weight: 600;
           letter-spacing: 0.5px;
           text-align: center;
           cursor: pointer;
-          border: 2px solid var(--global-base-color);
-          border-radius: 50px;
-          background: transparent;
-          color: var(--global-base-color);
-          transition: all 0.25s ease;
+          border: none;
+          border-radius: 0;
+          background: var(--global-base-color);
+          color: #fff;
+          transition: background 0.25s ease;
 
           &:hover {
-            background: var(--global-base-color);
-            color: #fff;
+            background: var(--global-masthead-link-color-hover);
           }
         }
 
         .follow-links {
           display: none;
-          flex-wrap: wrap;
-          gap: 8px;
-          margin-top: 10px;
-          padding-top: 8px;
+          justify-content: space-evenly;
+          align-items: center;
+          padding: 10px 0;
+          background: var(--global-bg-color);
+          border-bottom: 1px solid var(--global-border-color);
 
           a {
-            display: inline-flex;
+            display: flex;
             align-items: center;
-            gap: 5px;
-            padding: 5px 12px !important;
-            margin: 0 !important;
-            font-size: 0.85em;
-            border-radius: 20px;
-            background: var(--global-base-color);
-            color: #fff;
-            font-weight: 500;
-            text-decoration: none;
+            justify-content: center;
+            width: 36px;
+            height: 36px;
+            font-size: 1.15em;
+            color: var(--global-text-color);
+            border-radius: 50%;
             transition: all 0.2s ease;
+            text-decoration: none;
+            padding: 0 !important;
+            margin: 0 !important;
 
             &:before {
               display: none;
             }
 
             &:hover {
-              background: #fff;
-              color: var(--global-base-color);
-              transform: translateY(-1px);
-              box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+              background: var(--global-base-color);
+              color: #fff;
+              transform: scale(1.15);
             }
           }
         }

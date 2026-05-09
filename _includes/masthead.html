@@ -22,13 +22,13 @@
           </li>
           {% assign author = site.author %}
           <li class="masthead__menu-item mobile-only-links">
-            <button class="btn btn--inverse follow-toggle" type="button">Follow</button>
+            <button class="follow-toggle" type="button">Follow</button>
             <div class="follow-links">
-              {% if author.email %}<a href="mailto:{{ author.email }}"><i class="fas fa-fw fa-envelope"></i> Email</a>{% endif %}
-              {% if author.github %}<a href="https://github.com/{{ author.github }}"><i class="fab fa-fw fa-github"></i> GitHub</a>{% endif %}
-              {% if author.kaggle %}<a href="https://kaggle.com/{{ author.kaggle }}"><i class="fab fa-fw fa-kaggle"></i> Kaggle</a>{% endif %}
-              {% if author.linkedin %}<a href="https://www.linkedin.com/in/{{ author.linkedin }}"><i class="fab fa-fw fa-linkedin"></i> LinkedIn</a>{% endif %}
-              {% if author.twitter %}<a href="https://twitter.com/{{ author.twitter }}"><i class="fab fa-fw fa-x-twitter"></i> X</a>{% endif %}
+              {% if author.email %}<a href="mailto:{{ author.email }}" title="Email"><i class="fas fa-fw fa-envelope"></i></a>{% endif %}
+              {% if author.github %}<a href="https://github.com/{{ author.github }}" title="GitHub"><i class="fab fa-fw fa-github"></i></a>{% endif %}
+              {% if author.kaggle %}<a href="https://kaggle.com/{{ author.kaggle }}" title="Kaggle"><i class="fab fa-fw fa-kaggle"></i></a>{% endif %}
+              {% if author.linkedin %}<a href="https://www.linkedin.com/in/{{ author.linkedin }}" title="LinkedIn"><i class="fab fa-fw fa-linkedin"></i></a>{% endif %}
+              {% if author.twitter %}<a href="https://twitter.com/{{ author.twitter }}" title="X"><i class="fab fa-fw fa-x-twitter"></i></a>{% endif %}
             </div>
           </li>
         </ul>
