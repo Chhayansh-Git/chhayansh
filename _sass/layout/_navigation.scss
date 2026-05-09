@@ -414,8 +414,9 @@
       }
     }
 
-    &:hover .visible-links,
-    &:focus-within .visible-links {
+    button:hover ~ .visible-links,
+    button:focus ~ .visible-links,
+    .visible-links:hover {
       display: flex;
       flex-direction: column;
       width: 100%;
