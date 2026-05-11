@@ -155,8 +155,8 @@
 /* ─── Tooltip ────────────────────────────────────────────────── */
 #annai-tooltip {
   position: fixed;
-  bottom: 140px;
-  right: 20px;
+  bottom: 220px;
+  right: 140px;
   background: var(--annai-glass-bg);
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
@@ -644,7 +644,7 @@
   }
 
   #annai-chat-panel.annai-open {
-    transform: translateY(0) scale(1);
+    right: 16px;
   }
 
   #annai-avatar-container {
@@ -655,8 +655,8 @@
   }
 
   #annai-tooltip {
-    bottom: 155px;
-    right: 12px;
+    bottom: 160px;
+    right: 110px;
     max-width: 170px;
     font-size: 0.72rem;
     padding: 8px 12px;

@@ -56,7 +56,7 @@
   let isVrmHovered = false;
   let annaiState = 'awake'; // 'awake', 'sleeping', 'chatting'
   let sleepTimer = null;
-  const SLEEP_DELAY = 15000; // 15 seconds
+  const SLEEP_DELAY = 5000; // 5 seconds
 
   // ─── DOM References ──────────────────────────────────────────
   const $ = (sel) => document.querySelector(sel);
@@ -284,50 +284,79 @@
     const delta = vrmClock ? vrmClock.getDelta() : 0.016;
     const elapsed = vrmClock ? vrmClock.getElapsedTime() : 0;
 
-    // Idle breathing & interactive waving animation
+    // Graceful Pose State Machine
     if (vrmModel && vrmModel.scene) {
-      // Gentle breathing (vertical bounce)
-      vrmModel.scene.position.y = Math.sin(elapsed * 2) * 0.015;
+      const leftArm = vrmModel.humanoid?.getNormalizedBoneNode('leftUpperArm');
+      const leftLowerArm = vrmModel.humanoid?.getNormalizedBoneNode('leftLowerArm');
+      const rightArm = vrmModel.humanoid?.getNormalizedBoneNode('rightUpperArm');
+      const rightLowerArm = vrmModel.humanoid?.getNormalizedBoneNode('rightLowerArm');
+      const head = vrmModel.humanoid?.getNormalizedBoneNode('head');
+      const spine = vrmModel.humanoid?.getNormalizedBoneNode('spine');
 
-      // Arm waving logic
-      if (vrmModel.humanoid) {
-        const rightArm = vrmModel.humanoid.getNormalizedBoneNode('rightUpperArm');
-        const rightLowerArm = vrmModel.humanoid.getNormalizedBoneNode('rightLowerArm');
-        const head = vrmModel.humanoid.getNormalizedBoneNode('head');
+      // Default Awake/Idle Pose (Graceful standing, arms down, slight breathing)
+      const tPose = {
+        sceneRotX: 0, sceneRotZ: 0, scenePosY: Math.sin(elapsed * 2) * 0.015, scenePosX: 0,
+        rArmZ: -1.2, rArmX: 0, rArmY: 0, rLowerArmZ: 0, rLowerArmX: 0,
+        lArmZ: 1.2, lArmX: 0, lArmY: 0, lLowerArmZ: 0, lLowerArmX: 0,
+        headX: 0, headY: Math.sin(elapsed * 0.5) * 0.05, headZ: 0,
+        spineX: 0, spineY: 0, spineZ: 0
+      };
 
-        if (rightArm && rightLowerArm) {
-          if (isVrmHovered && !isChatOpen) {
-            // Waving state
-            const wave = Math.sin(elapsed * 12) * 0.4;
-            
-            // Lerp arm up
-            rightArm.rotation.z = THREE.MathUtils.lerp(rightArm.rotation.z, -1.3, 0.1);
-            rightArm.rotation.x = THREE.MathUtils.lerp(rightArm.rotation.x, 0.2, 0.1);
-            
-            // Oscillate lower arm
-            rightLowerArm.rotation.z = THREE.MathUtils.lerp(rightLowerArm.rotation.z, wave - 0.2, 0.2);
-            
-            // Look slightly towards the user
-            if (head) head.rotation.y = THREE.MathUtils.lerp(head.rotation.y, 0.2, 0.1);
-            if (head) head.rotation.x = THREE.MathUtils.lerp(head.rotation.x, 0.1, 0.1);
-          } else {
-            // Idle state: arms explicitly down
-            rightArm.rotation.z = THREE.MathUtils.lerp(rightArm.rotation.z, -1.2, 0.1);
-            rightArm.rotation.x = THREE.MathUtils.lerp(rightArm.rotation.x, 0, 0.1);
-            rightLowerArm.rotation.z = THREE.MathUtils.lerp(rightLowerArm.rotation.z, 0, 0.1);
-            
-            // Head idle movement
-            if (head) head.rotation.y = THREE.MathUtils.lerp(head.rotation.y, Math.sin(elapsed * 0.5) * 0.05, 0.05);
-            if (head) head.rotation.x = THREE.MathUtils.lerp(head.rotation.x, 0, 0.05);
-          }
-          
-          // Animate sleeping state
-          if (annaiState === 'sleeping') {
-             vrmModel.scene.rotation.x = THREE.MathUtils.lerp(vrmModel.scene.rotation.x, -Math.PI / 2, 0.05); // Lie backwards
-          } else {
-             vrmModel.scene.rotation.x = THREE.MathUtils.lerp(vrmModel.scene.rotation.x, 0, 0.1); // Stand up
-          }
-        }
+      if (annaiState === 'sleeping') {
+        // Lying down gracefully
+        tPose.sceneRotX = -Math.PI / 2.2;
+        tPose.scenePosY = -0.7;
+        tPose.lArmZ = 1.4; tPose.rArmZ = -1.4;
+        tPose.headX = -0.2; tPose.headZ = 0.2;
+      } else if (annaiState === 'chatting') {
+        // Leaning gracefully with folded arms
+        tPose.sceneRotZ = -0.15;
+        tPose.scenePosX = -0.1;
+        tPose.rArmZ = -1.0; tPose.rArmX = -0.5; tPose.rArmY = -0.5; tPose.rLowerArmX = -1.8;
+        tPose.lArmZ = 1.0; tPose.lArmX = -0.5; tPose.lArmY = 0.5; tPose.lLowerArmX = -1.8;
+        tPose.headY = -0.2;
+      } else if (isVrmHovered) {
+        // Energetic wave
+        tPose.rArmZ = -2.5; // High up
+        tPose.rArmX = 0.2;
+        tPose.rLowerArmZ = Math.sin(elapsed * 12) * 0.6;
+        tPose.headY = 0.2; // Look up
+      }
+
+      // Smoothly interpolate all values towards target pose
+      const lerpSpeed = 0.08;
+      vrmModel.scene.rotation.x = THREE.MathUtils.lerp(vrmModel.scene.rotation.x, tPose.sceneRotX, lerpSpeed);
+      vrmModel.scene.rotation.z = THREE.MathUtils.lerp(vrmModel.scene.rotation.z, tPose.sceneRotZ, lerpSpeed);
+      vrmModel.scene.position.y = THREE.MathUtils.lerp(vrmModel.scene.position.y, tPose.scenePosY, lerpSpeed);
+      vrmModel.scene.position.x = THREE.MathUtils.lerp(vrmModel.scene.position.x, tPose.scenePosX, lerpSpeed);
+
+      if (rightArm) {
+        rightArm.rotation.z = THREE.MathUtils.lerp(rightArm.rotation.z, tPose.rArmZ, lerpSpeed);
+        rightArm.rotation.x = THREE.MathUtils.lerp(rightArm.rotation.x, tPose.rArmX, lerpSpeed);
+        rightArm.rotation.y = THREE.MathUtils.lerp(rightArm.rotation.y, tPose.rArmY, lerpSpeed);
+      }
+      if (rightLowerArm) {
+        rightLowerArm.rotation.z = THREE.MathUtils.lerp(rightLowerArm.rotation.z, tPose.rLowerArmZ, lerpSpeed);
+        rightLowerArm.rotation.x = THREE.MathUtils.lerp(rightLowerArm.rotation.x, tPose.rLowerArmX, lerpSpeed);
+      }
+      if (leftArm) {
+        leftArm.rotation.z = THREE.MathUtils.lerp(leftArm.rotation.z, tPose.lArmZ, lerpSpeed);
+        leftArm.rotation.x = THREE.MathUtils.lerp(leftArm.rotation.x, tPose.lArmX, lerpSpeed);
+        leftArm.rotation.y = THREE.MathUtils.lerp(leftArm.rotation.y, tPose.lArmY, lerpSpeed);
+      }
+      if (leftLowerArm) {
+        leftLowerArm.rotation.z = THREE.MathUtils.lerp(leftLowerArm.rotation.z, tPose.lLowerArmZ, lerpSpeed);
+        leftLowerArm.rotation.x = THREE.MathUtils.lerp(leftLowerArm.rotation.x, tPose.lLowerArmX, lerpSpeed);
+      }
+      if (head) {
+        head.rotation.x = THREE.MathUtils.lerp(head.rotation.x, tPose.headX, lerpSpeed);
+        head.rotation.y = THREE.MathUtils.lerp(head.rotation.y, tPose.headY, lerpSpeed);
+        head.rotation.z = THREE.MathUtils.lerp(head.rotation.z, tPose.headZ, lerpSpeed);
+      }
+      if (spine) {
+        spine.rotation.x = THREE.MathUtils.lerp(spine.rotation.x, tPose.spineX, lerpSpeed);
+        spine.rotation.y = THREE.MathUtils.lerp(spine.rotation.y, tPose.spineY, lerpSpeed);
+        spine.rotation.z = THREE.MathUtils.lerp(spine.rotation.z, tPose.spineZ, lerpSpeed);
       }
 
       // Update VRM (spring bones, etc.)
