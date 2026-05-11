@@ -54,10 +54,14 @@
   let vrmClock = null;
   let vrmAnimId = null;
   let isVrmHovered = false;
+  let annaiState = 'awake'; // 'awake', 'sleeping', 'chatting'
+  let sleepTimer = null;
+  const SLEEP_DELAY = 15000; // 15 seconds
 
   // ─── DOM References ──────────────────────────────────────────
   const $ = (sel) => document.querySelector(sel);
   const avatarContainer = () => $('#annai-avatar-container');
+  const wakeArrow = () => $('#annai-wake-arrow');
   const tooltip = () => $('#annai-tooltip');
   const chatPanel = () => $('#annai-chat-panel');
   const messagesArea = () => $('#annai-messages');
@@ -115,10 +119,22 @@
     const container = avatarContainer();
     if (!container) return;
 
-    // Click handler (always wired regardless of 3D success)
+    // Click handlers
     container.addEventListener('click', toggleChat);
-    container.addEventListener('mouseenter', () => { isVrmHovered = true; });
-    container.addEventListener('mouseleave', () => { isVrmHovered = false; });
+    if (wakeArrow()) {
+      wakeArrow().addEventListener('click', wakeUp);
+    }
+    
+    container.addEventListener('mouseenter', () => { 
+      if (annaiState === 'awake') isVrmHovered = true; 
+      resetSleepTimer();
+    });
+    container.addEventListener('mouseleave', () => { 
+      isVrmHovered = false; 
+    });
+
+    // Start inactivity timer
+    resetSleepTimer();
 
     // Three.js is loaded via <script type="module"> which runs async.
     // Poll until window.THREE is available (max 5 seconds).
@@ -153,10 +169,10 @@
     // Scene
     vrmScene = new THREE.Scene();
 
-    // Camera — positioned to frame a standing VRM avatar
+    // Camera — zoomed in to frame the avatar properly on all screens
     vrmCamera = new THREE.PerspectiveCamera(35, width / height, 0.1, 20);
-    vrmCamera.position.set(0, 0.9, 2.6);
-    vrmCamera.lookAt(0, 0.9, 0);
+    vrmCamera.position.set(0, 1.15, 1.9); // Moved closer
+    vrmCamera.lookAt(0, 1.15, 0);
 
     // Renderer
     vrmRenderer = new THREE.WebGLRenderer({
@@ -295,14 +311,21 @@
             if (head) head.rotation.y = THREE.MathUtils.lerp(head.rotation.y, 0.2, 0.1);
             if (head) head.rotation.x = THREE.MathUtils.lerp(head.rotation.x, 0.1, 0.1);
           } else {
-            // Idle state
-            rightArm.rotation.z = THREE.MathUtils.lerp(rightArm.rotation.z, -0.1, 0.05);
-            rightArm.rotation.x = THREE.MathUtils.lerp(rightArm.rotation.x, 0, 0.05);
-            rightLowerArm.rotation.z = THREE.MathUtils.lerp(rightLowerArm.rotation.z, 0, 0.05);
+            // Idle state: arms explicitly down
+            rightArm.rotation.z = THREE.MathUtils.lerp(rightArm.rotation.z, -1.2, 0.1);
+            rightArm.rotation.x = THREE.MathUtils.lerp(rightArm.rotation.x, 0, 0.1);
+            rightLowerArm.rotation.z = THREE.MathUtils.lerp(rightLowerArm.rotation.z, 0, 0.1);
             
             // Head idle movement
             if (head) head.rotation.y = THREE.MathUtils.lerp(head.rotation.y, Math.sin(elapsed * 0.5) * 0.05, 0.05);
             if (head) head.rotation.x = THREE.MathUtils.lerp(head.rotation.x, 0, 0.05);
+          }
+          
+          // Animate sleeping state
+          if (annaiState === 'sleeping') {
+             vrmModel.scene.rotation.x = THREE.MathUtils.lerp(vrmModel.scene.rotation.x, -Math.PI / 2, 0.05); // Lie backwards
+          } else {
+             vrmModel.scene.rotation.x = THREE.MathUtils.lerp(vrmModel.scene.rotation.x, 0, 0.1); // Stand up
           }
         }
       }
@@ -400,8 +423,13 @@
     const tip = tooltip();
 
     if (isOpen) {
+      annaiState = 'chatting';
+      clearTimeout(sleepTimer);
+      if (wakeArrow()) wakeArrow().classList.remove('annai-visible');
+      
       panel.classList.add('annai-open');
-      container.classList.add('annai-hidden');
+      container.classList.remove('annai-sleeping');
+      container.classList.add('annai-integrated');
       tip.classList.remove('annai-visible');
       clearTimeout(tooltipTimeout);
       clearTimeout(tooltipHideTimeout);
@@ -412,10 +440,42 @@
         if (input) input.focus();
       }, 400);
     } else {
+      annaiState = 'awake';
       panel.classList.remove('annai-open');
-      container.classList.remove('annai-hidden');
+      container.classList.remove('annai-integrated');
+      resetSleepTimer();
       stopSpeaking();
     }
+  }
+
+  // ─── Lifecycle Methods ─────────────────────────────────────────
+  function resetSleepTimer() {
+    clearTimeout(sleepTimer);
+    if (annaiState !== 'chatting') {
+      sleepTimer = setTimeout(goToSleep, SLEEP_DELAY);
+    }
+  }
+
+  function goToSleep() {
+    if (annaiState === 'chatting') return;
+    annaiState = 'sleeping';
+    const container = avatarContainer();
+    if (container) container.classList.add('annai-sleeping');
+    if (wakeArrow()) wakeArrow().classList.add('annai-visible');
+    const tip = tooltip();
+    if (tip) tip.classList.remove('annai-visible');
+  }
+
+  function wakeUp() {
+    annaiState = 'awake';
+    const container = avatarContainer();
+    if (container) container.classList.remove('annai-sleeping');
+    if (wakeArrow()) wakeArrow().classList.remove('annai-visible');
+    
+    // Wave on wake up
+    isVrmHovered = true;
+    setTimeout(() => { isVrmHovered = false; }, 3000);
+    resetSleepTimer();
   }
 
   // ─── Message Handling ─────────────────────────────────────────

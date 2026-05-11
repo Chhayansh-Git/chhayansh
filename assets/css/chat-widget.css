@@ -46,10 +46,51 @@
   transform: scale(1.05);
 }
 
-#annai-avatar-container.annai-hidden {
+#annai-avatar-container.annai-sleeping {
   opacity: 0;
   pointer-events: none;
-  transform: scale(0.8);
+  transform: translateY(30px) scale(0.8);
+}
+
+#annai-avatar-container.annai-integrated {
+  /* Slide into the chat panel */
+  transform: translateX(-300px) scale(0.9);
+  z-index: 10001; /* Above the panel background */
+  pointer-events: none; /* Let clicks pass through to panel if needed */
+}
+
+/* ─── Wake Arrow ─────────────────────────────────────────────── */
+.annai-wake-arrow {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: var(--annai-user-bubble);
+  color: white;
+  border: none;
+  z-index: 9998;
+  cursor: pointer;
+  box-shadow: 0 4px 14px rgba(124, 58, 237, 0.4);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  pointer-events: none;
+  transform: translateY(20px) scale(0.8) rotate(-90deg);
+  transition: all var(--annai-transition);
+}
+
+.annai-wake-arrow.annai-visible {
+  opacity: 1;
+  pointer-events: auto;
+  transform: translateY(0) scale(1) rotate(-90deg);
+}
+
+.annai-wake-arrow:hover {
+  transform: translateY(-4px) scale(1.05) rotate(-90deg);
+  box-shadow: 0 8px 20px rgba(124, 58, 237, 0.6);
 }
 
 /* Three.js VRM canvas or fallback */
