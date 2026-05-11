@@ -14,12 +14,12 @@
 <link rel="icon" href="/images/favicon.ico"/>
 <meta name="theme-color" content="#ffffff"/>
 
-<!-- Annai Chat Widget: Styles + Font -->
+<!-- Annai Chat Widget: Styles -->
 <link rel="stylesheet" href="{{ base_path }}/assets/css/chat-widget.css"/>
 <link rel="preconnect" href="https://fonts.googleapis.com"/>
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
 
-<!-- Annai Chat Widget: Three.js + VRM (deferred to avoid blocking page render) -->
+<!-- Annai Chat Widget: Three.js + VRM (loaded as ES module, exposed to window) -->
 <script type="importmap">
 {
   "imports": {
@@ -30,14 +30,18 @@
 }
 </script>
 <script type="module">
-  import * as THREE from 'three';
-  import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
-  import { VRMLoaderPlugin } from '@pixiv/three-vrm';
-  // Expose to global scope for chat-widget.js (non-module script)
-  window.THREE = THREE;
-  THREE.GLTFLoader = GLTFLoader;
-  THREE.VRMLoaderPlugin = VRMLoaderPlugin;
+  try {
+    const THREE = await import('three');
+    const { GLTFLoader } = await import('three/addons/loaders/GLTFLoader.js');
+    const { VRMLoaderPlugin } = await import('@pixiv/three-vrm');
+    // Expose to global scope for chat-widget.js
+    window.THREE = THREE;
+    window.THREE.GLTFLoader = GLTFLoader;
+    window.THREE.VRMLoaderPlugin = VRMLoaderPlugin;
+    console.log('Annai: Three.js + VRM loaded successfully.');
+  } catch (err) {
+    console.error('Annai: Failed to load Three.js/VRM:', err);
+  }
 </script>
 
 <!-- end custom head snippets -->
-
