@@ -53,11 +53,11 @@
   let vrmModel = null;
   let vrmClock = null;
   let vrmAnimId = null;
-  let isVrmHovered = false;
   let annaiState = 'awake'; // 'awake', 'sleeping', 'chatting'
   let sleepTimer = null;
   const SLEEP_DELAY = 5000; // 5 seconds
   let isTransitioningToSleep = false;
+  let hasWaved = false; // Track if she has waved already during this interaction
 
   // ─── DOM References ──────────────────────────────────────────
   const $ = (sel) => document.querySelector(sel);
@@ -131,6 +131,8 @@
       resetSleepTimer();
     });
     container.addEventListener('mouseleave', () => { 
+      // Do not reset hasWaved immediately to prevent continuous waving
+      setTimeout(() => { if (!isVrmHovered) hasWaved = false; }, 2000);
       isVrmHovered = false; 
     });
 
@@ -322,17 +324,32 @@
         tPose.rArmZ = -1.0; tPose.rArmX = -0.5; tPose.rArmY = -0.5; tPose.rLowerArmX = -2.0;
         tPose.lArmZ = 1.0; tPose.lArmX = -0.5; tPose.lArmY = 0.5; tPose.lLowerArmX = -2.0;
         tPose.headY = -0.2;
-      } else if (isVrmHovered) {
-        // Energetic wave (arm high up)
+      } else if (isVrmHovered && !hasWaved) {
+        // Energetic wave (arm high up), happens once per interaction
         tPose.rArmZ = -2.8; 
         tPose.rArmX = 0.3;
         tPose.rArmY = 0.5;
         tPose.rLowerArmZ = Math.sin(elapsed * 12) * 0.8;
         tPose.headY = 0.2; 
+        
+        // Stop waving after 2.5 seconds
+        if (!window.waveTimeout) {
+          window.waveTimeout = setTimeout(() => {
+            hasWaved = true;
+            window.waveTimeout = null;
+          }, 2500);
+        }
+      }
+
+      // Update VRM (spring bones, etc.) FIRST so it doesn't overwrite our manual rotations
+      if (typeof vrmModel.update === 'function') {
+        vrmModel.update(delta);
       }
 
       // Smoothly interpolate all values towards target pose
-      const lerpSpeed = 0.08;
+      // Use a slower lerp speed for cinematic, video-like transitions
+      const lerpSpeed = isTransitioningToSleep ? 0.04 : (annaiState === 'sleeping' ? 0.04 : 0.08);
+      
       vrmModel.scene.rotation.x = THREE.MathUtils.lerp(vrmModel.scene.rotation.x, tPose.sceneRotX, lerpSpeed);
       vrmModel.scene.rotation.z = THREE.MathUtils.lerp(vrmModel.scene.rotation.z, tPose.sceneRotZ, lerpSpeed);
       vrmModel.scene.position.y = THREE.MathUtils.lerp(vrmModel.scene.position.y, tPose.scenePosY, lerpSpeed);
@@ -365,11 +382,6 @@
         spine.rotation.x = THREE.MathUtils.lerp(spine.rotation.x, tPose.spineX, lerpSpeed);
         spine.rotation.y = THREE.MathUtils.lerp(spine.rotation.y, tPose.spineY, lerpSpeed);
         spine.rotation.z = THREE.MathUtils.lerp(spine.rotation.z, tPose.spineZ, lerpSpeed);
-      }
-
-      // Update VRM (spring bones, etc.)
-      if (typeof vrmModel.update === 'function') {
-        vrmModel.update(delta);
       }
     }
 
@@ -503,17 +515,19 @@
     if (tip) tip.classList.remove('annai-visible');
     
     // Step 2: Wait for the graceful animation to finish, then disappear
+    // Increased timeout to 2 seconds for a video-like slow cinematic transition
     setTimeout(() => {
       if (annaiState !== 'sleeping') return; // Cancel if woken up
       isTransitioningToSleep = false;
       const container = avatarContainer();
       if (container) container.classList.add('annai-sleeping');
       if (wakeArrow()) wakeArrow().classList.add('annai-visible');
-    }, 1200); // Wait 1.2s for lerp to complete
+    }, 2000); 
   }
 
   function wakeUp() {
     isTransitioningToSleep = false;
+    hasWaved = false; // Reset wave state on wake
     
     // Step 1: Reappear immediately while still in the sleeping pose on the floor
     const container = avatarContainer();
@@ -523,11 +537,10 @@
     // Step 2: Change state to awake so she smoothly stands up
     annaiState = 'awake';
     
-    // Step 3: Trigger wave *after* she stands up
+    // Step 3: Trigger wave *after* she stands up (increased delay for smoother cinematic feel)
     setTimeout(() => { 
       isVrmHovered = true; 
-      setTimeout(() => { isVrmHovered = false; }, 3000);
-    }, 800); // Wait 0.8s for stand up animation
+    }, 1200); 
     
     resetSleepTimer();
   }
