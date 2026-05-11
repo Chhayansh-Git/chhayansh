@@ -34,7 +34,7 @@
     var threeModule = await import('three');
     var gltfModule = await import('three/addons/loaders/GLTFLoader.js');
     var vrmModule = await import('@pixiv/three-vrm');
-    // Module namespace objects are frozen — spread into a mutable plain object
+    /* Module namespace objects are frozen — spread into a mutable plain object */
     window.THREE = Object.assign({}, threeModule);
     window.THREE.GLTFLoader = gltfModule.GLTFLoader;
     window.THREE.VRMLoaderPlugin = vrmModule.VRMLoaderPlugin;
