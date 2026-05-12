@@ -32,8 +32,8 @@
 #annai-avatar-container {
   position: fixed;
   bottom: 10px;
-  right: 40px;
-  width: 200px;
+  right: 50px;
+  width: 250px;
   height: 200px;
   z-index: 9998;
   cursor: pointer;
@@ -161,8 +161,8 @@
 /* ─── Tooltip ────────────────────────────────────────────────── */
 #annai-tooltip {
   position: fixed;
-  bottom: 185px;
-  right: 105px;
+  bottom: 190px;
+  right: 110px;
   background: var(--annai-glass-bg);
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
