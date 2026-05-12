@@ -358,7 +358,7 @@
         /* Lie on RIGHT SIDE facing the user (ref image 4) */
         t.sceneRotZ = Math.PI / 2;    /* Roll 90° to the right */
         t.scenePosY = -0.3;
-        t.scenePosX = 0.5;
+        t.scenePosX = 0.8;
         /* Left arm tucked under head */
         t.lUAz = 0.5; t.lUAx = -1.0;
         t.lLAx = -1.2;
