@@ -162,7 +162,7 @@
 #annai-tooltip {
   position: fixed;
   bottom: 195px;
-  right: 80px;
+  right: 90px;
   background: var(--annai-glass-bg);
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
