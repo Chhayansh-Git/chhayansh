@@ -292,74 +292,90 @@
     const delta = vrmClock ? vrmClock.getDelta() : 0.016;
     const elapsed = vrmClock ? vrmClock.getElapsedTime() : 0;
 
-    /* ── Update VRM internals (spring bones, lookAt, humanoid sync) ── */
-    /* autoUpdateHumanBones stays TRUE so the humanoid system works.
-       We apply our manual overrides to RAW bones AFTER this call,
-       so our rotations are the final values rendered. */
-    if (vrmModel && typeof vrmModel.update === 'function') {
-      vrmModel.update(delta);
-    }
-
-    /* ── Manual Pose Overrides on RAW bones ── */
-    if (vrmModel && vrmModel.scene && vrmModel.humanoid) {
-      const getRaw = (name) => vrmModel.humanoid.getRawBoneNode(name);
+    /* ── Set NORMALIZED bone rotations BEFORE vrm.update() ── */
+    /* VRM 1.0 architecture:
+       1. We pose the NORMALIZED rig (standard Y-up coordinate system)
+       2. vrm.update() calls humanoid.update() which copies our
+          normalized quaternions → raw bone quaternions automatically.
+       3. Spring bones etc. then run on top of the result. */
+    if (vrmModel && vrmModel.humanoid) {
+      const getNorm = (name) => vrmModel.humanoid.getNormalizedBoneNode(name);
       
-      const lUA  = getRaw('leftUpperArm');
-      const lLA  = getRaw('leftLowerArm');
-      const rUA  = getRaw('rightUpperArm');
-      const rLA  = getRaw('rightLowerArm');
-      const head = getRaw('head');
-      const spine = getRaw('spine');
-      const hips  = getRaw('hips');
+      const lUA  = getNorm('leftUpperArm');
+      const lLA  = getNorm('leftLowerArm');
+      const rUA  = getNorm('rightUpperArm');
+      const rLA  = getNorm('rightLowerArm');
+      const head = getNorm('head');
+      const spine = getNorm('spine');
+      const hips  = getNorm('hips');
+      const lUL  = getNorm('leftUpperLeg');
+      const rUL  = getNorm('rightUpperLeg');
+      const lLL  = getNorm('leftLowerLeg');
+      const rLL  = getNorm('rightLowerLeg');
 
-      /* ── Target pose: natural standing idle ── */
+      /* ── Target pose: natural standing idle (matching ref image 1) ── */
       const t = {
         sceneRotX: 0, sceneRotZ: 0,
-        scenePosY: Math.sin(elapsed * 1.5) * 0.008,
+        scenePosY: Math.sin(elapsed * 1.5) * 0.005,
         scenePosX: 0,
-        /* Arms relaxed at sides */
-        rUAz: 0.3, rUAx: 0, rUAy: 0,
+        /* Arms naturally at sides — VRM normalized: Z rotation spreads arms */
+        rUAz: 0.15, rUAx: 0, rUAy: 0,
         rLAz: 0, rLAx: 0,
-        lUAz: -0.3, lUAx: 0, lUAy: 0,
+        lUAz: -0.15, lUAx: 0, lUAy: 0,
         lLAz: 0, lLAx: 0,
         /* Gentle idle head sway */
-        headX: Math.sin(elapsed * 0.8) * 0.02,
-        headY: Math.sin(elapsed * 0.5) * 0.03,
+        headX: Math.sin(elapsed * 0.8) * 0.015,
+        headY: Math.sin(elapsed * 0.5) * 0.02,
         headZ: 0,
-        spineX: 0, spineZ: 0
+        spineX: 0, spineZ: 0,
+        /* Legs straight */
+        lULx: 0, lULz: 0, rULx: 0, rULz: 0,
+        lLLx: 0, rLLx: 0,
+        /* Hips */
+        hipsX: 0, hipsZ: 0, hipsPosY: 0
       };
 
       /* ── State overrides ── */
       if (annaiState === 'sleeping') {
-        /* Lie on her RIGHT SIDE facing the user */
-        t.sceneRotZ = Math.PI / 2.2;  /* Roll to the right */
-        t.scenePosY = -0.4;
-        t.scenePosX = 0.3;
-        /* Arms in front, relaxed */
-        t.rUAz = 0.5; t.rUAx = -0.3;
-        t.lUAz = -0.5; t.lUAx = -0.3;
-        t.rLAz = 0.3; t.lLAz = -0.3;
-        /* Head resting sideways */
-        t.headZ = -0.2; t.headY = 0;
-        t.headX = 0;
+        /* Lie on LEFT SIDE facing the user (ref image 4) */
+        t.sceneRotZ = -Math.PI / 2;    /* Roll 90° to the left */
+        t.scenePosY = -0.3;
+        t.scenePosX = -0.15;
+        /* Right arm tucked under head */
+        t.rUAz = -0.8; t.rUAx = -1.0;
+        t.rLAx = -1.2;
+        /* Left arm resting on body */
+        t.lUAz = 0.3; t.lUAx = -0.5;
+        t.lLAx = -0.8;
+        /* Legs slightly bent */
+        t.lULx = -0.4; t.rULx = -0.5;
+        t.lLLx = 0.6; t.rLLx = 0.8;
+        /* Head resting */
+        t.headZ = 0.15; t.headY = 0; t.headX = 0;
       } else if (annaiState === 'chatting') {
-        /* Sitting on upper-right edge of panel */
-        t.sceneRotZ = -0.08;
-        /* Arms crossed / folded */
-        t.rUAz = 0.6; t.rUAx = -0.4; t.rUAy = -0.3;
-        t.rLAx = -1.4;
-        t.lUAz = -0.6; t.lUAx = -0.4; t.lUAy = 0.3;
-        t.lLAx = -1.4;
-        t.headY = -0.1;
+        /* Sitting pose (ref image 2) — legs dangling slightly */
+        t.lULx = -1.5; t.rULx = -1.5;
+        t.lLLx = 1.5; t.rLLx = 1.5;
+        /* Arms resting on thighs */
+        t.rUAz = 0.2; t.rUAx = -0.3;
+        t.rLAx = -0.4;
+        t.lUAz = -0.2; t.lUAx = -0.3;
+        t.lLAx = -0.4;
+        /* Look slightly forward */
+        t.headY = -0.05;
         t.spineX = 0.05;
+        t.hipsPosY = -0.15;
       } else if (isVrmHovered && !hasWaved) {
-        /* One-time wave: right arm raised high */
-        t.rUAz = -1.8;
-        t.rUAx = 0.3;
-        t.rUAy = 0.3;
-        t.rLAz = Math.sin(elapsed * 10) * 0.4;
-        t.headY = 0.1;
-        t.headX = 0.04;
+        /* Cute wave with right hand near face (ref image 3) */
+        t.rUAz = -0.8; t.rUAx = 0;
+        t.rUAy = -0.8;
+        t.rLAx = -1.8;
+        t.rLAz = Math.sin(elapsed * 8) * 0.2;
+        /* Left arm relaxed */
+        t.lUAz = -0.15;
+        /* Head tilt */
+        t.headZ = 0.1; t.headY = 0;
+        t.headX = Math.sin(elapsed * 0.5) * 0.03;
         
         if (!window._annaiWaveTimer) {
           window._annaiWaveTimer = setTimeout(() => {
@@ -370,7 +386,7 @@
       }
 
       /* ── Smooth interpolation (lerp) ── */
-      const sp = (annaiState === 'sleeping' || isTransitioningToSleep) ? 0.03 : 0.06;
+      const sp = (annaiState === 'sleeping' || isTransitioningToSleep) ? 0.025 : 0.05;
 
       /* Scene transforms */
       vrmModel.scene.rotation.x = THREE.MathUtils.lerp(vrmModel.scene.rotation.x, t.sceneRotX, sp);
@@ -412,6 +428,29 @@
         spine.rotation.x = THREE.MathUtils.lerp(spine.rotation.x, t.spineX, sp);
         spine.rotation.z = THREE.MathUtils.lerp(spine.rotation.z, t.spineZ, sp);
       }
+
+      /* Legs */
+      if (lUL) {
+        lUL.rotation.x = THREE.MathUtils.lerp(lUL.rotation.x, t.lULx, sp);
+        lUL.rotation.z = THREE.MathUtils.lerp(lUL.rotation.z, t.lULz, sp);
+      }
+      if (rUL) {
+        rUL.rotation.x = THREE.MathUtils.lerp(rUL.rotation.x, t.rULx, sp);
+        rUL.rotation.z = THREE.MathUtils.lerp(rUL.rotation.z, t.rULz, sp);
+      }
+      if (lLL) { lLL.rotation.x = THREE.MathUtils.lerp(lLL.rotation.x, t.lLLx, sp); }
+      if (rLL) { rLL.rotation.x = THREE.MathUtils.lerp(rLL.rotation.x, t.rLLx, sp); }
+
+      /* Hips position for sitting */
+      if (hips) {
+        hips.rotation.x = THREE.MathUtils.lerp(hips.rotation.x, t.hipsX, sp);
+        hips.rotation.z = THREE.MathUtils.lerp(hips.rotation.z, t.hipsZ, sp);
+      }
+    }
+
+    /* ── NOW call vrm.update() — this copies normalized → raw bones ── */
+    if (vrmModel && typeof vrmModel.update === 'function') {
+      vrmModel.update(delta);
     }
 
     vrmRenderer.render(vrmScene, vrmCamera);
