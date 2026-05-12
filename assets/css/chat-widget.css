@@ -50,7 +50,7 @@
 #annai-avatar-container.annai-sleeping {
   opacity: 0;
   pointer-events: none;
-  transform: translateY(30px) scale(0.8);
+  transform: translateX(20px) translateY(30px) scale(0.8);
 }
 
 #annai-avatar-container.annai-integrated {
@@ -161,8 +161,8 @@
 /* ─── Tooltip ────────────────────────────────────────────────── */
 #annai-tooltip {
   position: fixed;
-  bottom: 190px;
-  right: 110px;
+  bottom: 195px;
+  right: 90px;
   background: var(--annai-glass-bg);
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
