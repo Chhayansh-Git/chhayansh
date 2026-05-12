@@ -304,7 +304,7 @@
       camTargetZ = 3.5;
     } else if (annaiState === 'sleeping') {
       camTargetY = 0.5;   /* She drops and rotates, follow center of mass */
-      camTargetZ = 4.2;   /* Pull back wide for horizontal body */
+      camTargetZ = 3.5;   /* Pull back wide for horizontal body */
     }
     vrmCamera.position.y = THREE.MathUtils.lerp(vrmCamera.position.y, camTargetY, 0.03);
     vrmCamera.position.z = THREE.MathUtils.lerp(vrmCamera.position.z, camTargetZ, 0.03);
