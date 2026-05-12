@@ -297,14 +297,10 @@
     const elapsed = vrmClock ? vrmClock.getElapsedTime() : 0;
 
     /* ── Dynamic camera per state ── */
-    /* All states show full body. Sleeping needs wider framing for horizontal pose. */
     let camTargetY = 0.8, camTargetZ = 3.5;
     if (annaiState === 'chatting') {
       camTargetY = 0.7;
       camTargetZ = 3.5;
-    } else if (annaiState === 'sleeping') {
-      camTargetY = 0.5;   /* She drops and rotates, follow center of mass */
-      camTargetZ = 3.5;   /* Pull back wide for horizontal body */
     }
     vrmCamera.position.y = THREE.MathUtils.lerp(vrmCamera.position.y, camTargetY, 0.03);
     vrmCamera.position.z = THREE.MathUtils.lerp(vrmCamera.position.z, camTargetZ, 0.03);
@@ -354,23 +350,7 @@
       };
 
       /* ── State overrides ── */
-      if (annaiState === 'sleeping') {
-        /* Lie on RIGHT SIDE facing the user (ref image 4) */
-        t.sceneRotZ = Math.PI / 2;    /* Roll 90° to the right */
-        t.scenePosY = -0.3;
-        t.scenePosX = 0.8;
-        /* Arms stay DOWN at sides (close to standing values) with forward curl.
-           Standing = rUAz:1.2, lUAz:-1.2. Keeping close avoids T-pose pass-through. */
-        t.rUAz = 1.0;  t.rUAx = -0.4;   /* Right arm at side, curled forward slightly */
-        t.rLAx = -0.6;                    /* Right elbow slightly bent */
-        t.lUAz = -1.0; t.lUAx = -0.6;   /* Left arm at side, curled forward (pillow) */
-        t.lLAx = -0.9;                    /* Left elbow bent more (hand near face) */
-        /* Legs slightly bent */
-        t.lULx = -0.4; t.rULx = -0.5;
-        t.lLLx = 0.6; t.rLLx = 0.8;
-        /* Head resting */
-        t.headZ = -0.15; t.headY = 0; t.headX = 0;
-      } else if (annaiState === 'chatting') {
+      if (annaiState === 'chatting') {
         /* Sitting pose (ref image 2) — legs dangling */
         t.lULx = -1.5; t.rULx = -1.5;
         t.lLLx = 1.5; t.rLLx = 1.5;
@@ -597,25 +577,14 @@
   function goToSleep() {
     if (annaiState === 'chatting' || isTransitioningToSleep) return;
     
-    // Step 1: Trigger 3D sleeping animation (lie down)
     annaiState = 'sleeping';
-    isTransitioningToSleep = true;
     const tip = tooltip();
     if (tip) tip.classList.remove('annai-visible');
     
-    /* Step 2: Wait for the graceful lie-down animation to complete visibly,
-       then hold her there so the user sees her lying, THEN fade out */
-    setTimeout(() => {
-      if (annaiState !== 'sleeping') return; /* Cancel if woken up early */
-      isTransitioningToSleep = false;
-      /* She is now fully lying down — hold visible for 4 more seconds */
-      setTimeout(() => {
-        if (annaiState !== 'sleeping') return;
-        const container = avatarContainer();
-        if (container) container.classList.add('annai-sleeping');
-        if (wakeArrow()) wakeArrow().classList.add('annai-visible');
-      }, 4000); /* 4s visible while lying */
-    }, 4000); /* 4s for the lie-down animation itself */
+    /* Just fade out while standing — no lie-down animation */
+    const container = avatarContainer();
+    if (container) container.classList.add('annai-sleeping');
+    if (wakeArrow()) wakeArrow().classList.add('annai-visible');
   }
 
   function wakeUp() {
