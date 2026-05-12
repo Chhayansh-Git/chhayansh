@@ -173,10 +173,10 @@
     // Scene
     vrmScene = new THREE.Scene();
 
-    // Camera — zoomed in to frame the avatar properly on all screens
+    // Camera — pulled back to frame the FULL body (head to toe)
     vrmCamera = new THREE.PerspectiveCamera(35, width / height, 0.1, 20);
-    vrmCamera.position.set(0, 1.15, 1.9); // Moved closer
-    vrmCamera.lookAt(0, 1.15, 0);
+    vrmCamera.position.set(0, 0.8, 3.5);
+    vrmCamera.lookAt(0, 0.8, 0);
 
     // Renderer
     vrmRenderer = new THREE.WebGLRenderer({
@@ -297,14 +297,14 @@
     const elapsed = vrmClock ? vrmClock.getElapsedTime() : 0;
 
     /* ── Dynamic camera per state ── */
-    /* Standing/waving: frame upper body; Chatting: zoom out for full body; Sleeping: follow her down */
-    let camTargetY = 1.15, camTargetZ = 1.9;
+    /* All states show full body. Sleeping needs wider framing for horizontal pose. */
+    let camTargetY = 0.8, camTargetZ = 3.5;
     if (annaiState === 'chatting') {
-      camTargetY = 0.7;   /* Lower to show legs */
-      camTargetZ = 2.8;   /* Pull back further */
+      camTargetY = 0.7;
+      camTargetZ = 3.5;
     } else if (annaiState === 'sleeping') {
-      camTargetY = 0.35;  /* Follow her all the way down as she lies */
-      camTargetZ = 3.2;   /* Pull back wide to show full lying body */
+      camTargetY = 0.5;   /* She drops and rotates, follow center of mass */
+      camTargetZ = 4.2;   /* Pull back wide for horizontal body */
     }
     vrmCamera.position.y = THREE.MathUtils.lerp(vrmCamera.position.y, camTargetY, 0.03);
     vrmCamera.position.z = THREE.MathUtils.lerp(vrmCamera.position.z, camTargetZ, 0.03);
