@@ -32,7 +32,7 @@
 #annai-avatar-container {
   position: fixed;
   bottom: 10px;
-  right: 50px;
+  right: 10px;
   width: 200px;
   height: 200px;
   z-index: 9998;
