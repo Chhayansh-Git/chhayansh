@@ -55,10 +55,10 @@
 
 #annai-avatar-container.annai-integrated {
   /* Sit on the upper-right corner of the chat panel */
-  bottom: auto;
-  top: 180px;
-  right: 22px;
-  transform: scale(0.7);
+  top: auto;
+  bottom: 520px; /* Chat panel is 540px high + 20px bottom = 560px. Offset so avatar sits on edge */
+  right: 20px;
+  transform: scale(0.8);
   z-index: 10001;
   pointer-events: none;
 }

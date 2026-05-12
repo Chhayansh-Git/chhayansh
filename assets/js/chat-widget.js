@@ -318,11 +318,11 @@
         sceneRotX: 0, sceneRotZ: 0,
         scenePosY: Math.sin(elapsed * 1.5) * 0.005,
         scenePosX: 0,
-        /* Arms naturally at sides — VRM normalized: Z rotation spreads arms */
-        rUAz: 0.15, rUAx: 0, rUAy: 0,
-        rLAz: 0, rLAx: 0,
-        lUAz: -0.15, lUAx: 0, lUAy: 0,
-        lLAz: 0, lLAx: 0,
+        /* Arms at sides — VRM rest = T-pose, need ~1.2 rad to bring arms down */
+        rUAz: 1.2, rUAx: 0.05, rUAy: 0,
+        rLAz: 0, rLAx: -0.05,
+        lUAz: -1.2, lUAx: 0.05, lUAy: 0,
+        lLAz: 0, lLAx: -0.05,
         /* Gentle idle head sway */
         headX: Math.sin(elapsed * 0.8) * 0.015,
         headY: Math.sin(elapsed * 0.5) * 0.02,
@@ -337,29 +337,29 @@
 
       /* ── State overrides ── */
       if (annaiState === 'sleeping') {
-        /* Lie on LEFT SIDE facing the user (ref image 4) */
-        t.sceneRotZ = -Math.PI / 2;    /* Roll 90° to the left */
+        /* Lie on RIGHT SIDE facing the user (ref image 4) */
+        t.sceneRotZ = Math.PI / 2;    /* Roll 90° to the right */
         t.scenePosY = -0.3;
-        t.scenePosX = -0.15;
-        /* Right arm tucked under head */
-        t.rUAz = -0.8; t.rUAx = -1.0;
-        t.rLAx = -1.2;
-        /* Left arm resting on body */
-        t.lUAz = 0.3; t.lUAx = -0.5;
-        t.lLAx = -0.8;
+        t.scenePosX = 0.15;
+        /* Left arm tucked under head */
+        t.lUAz = 0.5; t.lUAx = -1.0;
+        t.lLAx = -1.2;
+        /* Right arm resting on body */
+        t.rUAz = -0.3; t.rUAx = -0.5;
+        t.rLAx = -0.8;
         /* Legs slightly bent */
         t.lULx = -0.4; t.rULx = -0.5;
         t.lLLx = 0.6; t.rLLx = 0.8;
         /* Head resting */
-        t.headZ = 0.15; t.headY = 0; t.headX = 0;
+        t.headZ = -0.15; t.headY = 0; t.headX = 0;
       } else if (annaiState === 'chatting') {
-        /* Sitting pose (ref image 2) — legs dangling slightly */
+        /* Sitting pose (ref image 2) — legs dangling */
         t.lULx = -1.5; t.rULx = -1.5;
         t.lLLx = 1.5; t.rLLx = 1.5;
-        /* Arms resting on thighs */
-        t.rUAz = 0.2; t.rUAx = -0.3;
+        /* Arms resting on thighs — still need arm-down rotation */
+        t.rUAz = 1.0; t.rUAx = -0.3;
         t.rLAx = -0.4;
-        t.lUAz = -0.2; t.lUAx = -0.3;
+        t.lUAz = -1.0; t.lUAx = -0.3;
         t.lLAx = -0.4;
         /* Look slightly forward */
         t.headY = -0.05;
