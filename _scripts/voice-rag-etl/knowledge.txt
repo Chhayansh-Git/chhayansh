@@ -1,0 +1,31 @@
+Identity and Demographics:
+Chhayansh Porwal is a 3rd-year B.Tech student in Computer Science and Engineering at Rajasthan Technical University (RTU), currently holding a CGPA of 8.81. He resides in Kota, Rajasthan. He is a software engineer specializing in native Android architecture, computer vision pipelines, and full-stack machine learning systems. He maintains a rigorous physical fitness routine, running daily and performing home-based circuit workouts to balance the sedentary nature of software development.
+
+Career Objectives:
+Chhayansh is actively preparing his engineering foundation to enter the Japanese tech market as a fresh graduate. He is studying the Japanese language and targeting high-tier technical roles in Tokyo. He values deep engineering fundamentals, preferring to understand system-level APIs and custom software architecture over surface-level framework integrations.
+
+Technical Skills:
+- Mobile Development: Native Android, Kotlin, Jetpack Compose, MVVM Architecture, Room Databases, Background Services.
+- Backend & Full-Stack: Python, FastAPI, Node.js, Next.js, Prisma, Redis.
+- AI & Computer Vision: YOLOv8, MediaPipe FaceMesh, OpenAI CLIP ViT-L/14, PyTorch, 3D Noise2Void, LangChain, SentenceTransformers.
+- Languages & Tools: Python, Kotlin, JavaScript/TypeScript, C++, Git, Docker, MongoDB, PostgreSQL.
+
+Project: AI Wedding Image Culling System
+Chhayansh developed an automated computer vision pipeline for Fotographiya to curate massive raw photographic datasets. The system ingests event photos and filters them through multiple AI stages. Stage 1 uses Laplacian variance algorithms to discard blurry images. Stage 2 utilizes YOLOv8 to ensure human subjects are present, coupled with MTCNN for facial landmark analysis to discard photos with closed eyes or poor expressions. Stage 3 handles semantic duplication by converting images into vector embeddings using OpenAI's CLIP ViT-L/14; it groups identical shots regardless of camera movement by calculating cosine similarity. The entire inference architecture is orchestrated via Python and FastAPI to handle heavy concurrent tensor operations.
+GitHub Link: https://github.com/chhayanshporwal
+
+Project: 3D Calcium Imaging Denoising (AI4Life International Grand Challenge)
+Chhayansh secured Global Rank 2 in the AI4Life International Grand Challenge. He developed a production-ready biological image restoration pipeline to denoise live-cell calcium imaging volumetric video. Because clean "ground truth" data does not exist for this cellular microscopy, he implemented a 3D Noise2Void (N2V) self-supervised neural network. Built using PyTorch, the model learns to reconstruct biological structures by predicting masked pixels from surrounding noisy data. He optimized high-dimensional data loaders and spatial tensor augmentations to process massive multi-frame TIFF sequences within GPU memory limits.
+GitHub Link: https://github.com/chhayanshporwal
+
+Project: CallSentry (Android Application)
+CallSentry is a system-level Android security application built natively in Kotlin. It provides proactive mobile privacy and emergency call breakthrough features. The architecture utilizes Jetpack Compose for the UI, MVVM design patterns for state management, and Room databases for secure local storage. It heavily leverages Android's background services and system-level communication control APIs.
+GitHub Link: https://github.com/chhayanshporwal/CallSentry
+
+Project: AI Teacher Recruitment System
+Chhayansh built a full-stack, three-sided marketplace (Candidate, School, Admin) for educational hiring. The platform uses Next.js and TypeScript for a high-performance frontend and Node.js for backend routing. He integrated an AI-driven matching engine using FastAPI and SentenceTransformers to perform automated resume screening, matching teacher qualifications against school requirements.
+GitHub Link: https://github.com/chhayanshporwal
+
+Project: Project Koma (Manga Production Pipeline)
+A "Human-In-The-Loop" software architecture designed to automate manga production from text descriptions. The pipeline integrates Python, machine learning models, and auto-annotation tools to generate panel layouts and visual content programmatically.
+GitHub Link: https://github.com/chhayanshporwal
