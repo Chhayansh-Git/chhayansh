@@ -244,12 +244,8 @@
         if (vrm) {
           vrmModel = vrm;
           
-          /* CRITICAL: Disable autoUpdateHumanBones so vrm.update() does NOT
-             reset our manual bone rotations back to T-pose every frame. */
-          if (vrm.humanoid) {
-            vrm.humanoid.autoUpdateHumanBones = false;
-            console.log('Annai: autoUpdateHumanBones disabled — manual bone control active.');
-          }
+          /* Expose on window for debugging */
+          window._annaiVRM = vrm;
           
           vrm.scene.rotation.y = 0; 
           vrmScene.add(vrm.scene);
@@ -258,6 +254,8 @@
           if (vrm.lookAt) {
             vrm.lookAt.target = vrmCamera;
           }
+          
+          console.log('Annai: VRM loaded. Humanoid:', !!vrm.humanoid, 'Bones:', vrm.humanoid ? Object.keys(vrm.humanoid.humanBones) : 'N/A');
         } else {
           // Plain GLTF model fallback
           const model = gltf.scene;
@@ -294,76 +292,75 @@
     const delta = vrmClock ? vrmClock.getDelta() : 0.016;
     const elapsed = vrmClock ? vrmClock.getElapsedTime() : 0;
 
-    /* ── Update VRM internals (spring bones, lookAt, etc.) ── */
+    /* ── Update VRM internals (spring bones, lookAt, humanoid sync) ── */
+    /* autoUpdateHumanBones stays TRUE so the humanoid system works.
+       We apply our manual overrides to RAW bones AFTER this call,
+       so our rotations are the final values rendered. */
     if (vrmModel && typeof vrmModel.update === 'function') {
       vrmModel.update(delta);
     }
 
-    /* ── Graceful Pose State Machine ── */
-    /* Because autoUpdateHumanBones is disabled, vrm.update() will NOT touch
-       the humanoid bones. We have full manual control below. */
+    /* ── Manual Pose Overrides on RAW bones ── */
     if (vrmModel && vrmModel.scene && vrmModel.humanoid) {
-      const getBone = (name) => {
-        return vrmModel.humanoid.getNormalizedBoneNode(name);
-      };
+      const getRaw = (name) => vrmModel.humanoid.getRawBoneNode(name);
       
-      const leftUpperArm  = getBone('leftUpperArm');
-      const leftLowerArm  = getBone('leftLowerArm');
-      const rightUpperArm = getBone('rightUpperArm');
-      const rightLowerArm = getBone('rightLowerArm');
-      const headBone      = getBone('head');
-      const spineBone     = getBone('spine');
+      const lUA  = getRaw('leftUpperArm');
+      const lLA  = getRaw('leftLowerArm');
+      const rUA  = getRaw('rightUpperArm');
+      const rLA  = getRaw('rightLowerArm');
+      const head = getRaw('head');
+      const spine = getRaw('spine');
+      const hips  = getRaw('hips');
 
-      /* ── Target pose defaults: natural standing idle ── */
-      const target = {
+      /* ── Target pose: natural standing idle ── */
+      const t = {
         sceneRotX: 0, sceneRotZ: 0,
-        scenePosY: Math.sin(elapsed * 1.5) * 0.01,
+        scenePosY: Math.sin(elapsed * 1.5) * 0.008,
         scenePosX: 0,
-        /* Arms down at sides (Z controls how far from body) */
-        rUpperArmZ: -1.2, rUpperArmX: 0.15, rUpperArmY: 0,
-        rLowerArmZ: -0.05, rLowerArmX: 0,
-        lUpperArmZ:  1.2, lUpperArmX: 0.15, lUpperArmY: 0,
-        lLowerArmZ:  0.05, lLowerArmX: 0,
+        /* Arms relaxed at sides */
+        rUAz: 0.3, rUAx: 0, rUAy: 0,
+        rLAz: 0, rLAx: 0,
+        lUAz: -0.3, lUAx: 0, lUAy: 0,
+        lLAz: 0, lLAx: 0,
         /* Gentle idle head sway */
-        headX: Math.sin(elapsed * 0.8) * 0.03,
-        headY: Math.sin(elapsed * 0.5) * 0.04,
+        headX: Math.sin(elapsed * 0.8) * 0.02,
+        headY: Math.sin(elapsed * 0.5) * 0.03,
         headZ: 0,
-        spineX: 0.03, spineY: 0, spineZ: 0
+        spineX: 0, spineZ: 0
       };
 
       /* ── State overrides ── */
       if (annaiState === 'sleeping') {
-        /* Graceful lying down — rotate the whole scene backwards */
-        target.sceneRotX = -Math.PI / 2.2;
-        target.scenePosY = -0.6;
-        /* Arms relaxed at sides while lying */
-        target.rUpperArmZ = -1.3; target.rUpperArmX = 0;
-        target.lUpperArmZ =  1.3; target.lUpperArmX = 0;
-        target.rLowerArmZ = -0.1; target.lLowerArmZ = 0.1;
-        /* Head tilted to side */
-        target.headX = -0.15; target.headZ = 0.25;
-        target.headY = 0;
+        /* Lie on her RIGHT SIDE facing the user */
+        t.sceneRotZ = Math.PI / 2.2;  /* Roll to the right */
+        t.scenePosY = -0.4;
+        t.scenePosX = 0.3;
+        /* Arms in front, relaxed */
+        t.rUAz = 0.5; t.rUAx = -0.3;
+        t.lUAz = -0.5; t.lUAx = -0.3;
+        t.rLAz = 0.3; t.lLAz = -0.3;
+        /* Head resting sideways */
+        t.headZ = -0.2; t.headY = 0;
+        t.headX = 0;
       } else if (annaiState === 'chatting') {
-        /* Leaning with folded arms against panel edge */
-        target.sceneRotZ = -0.12;
-        target.scenePosX = -0.08;
-        /* Arms crossed in front of body */
-        target.rUpperArmZ = -0.8; target.rUpperArmX = -0.6;
-        target.rUpperArmY = -0.4; target.rLowerArmX = -1.6;
-        target.lUpperArmZ =  0.8; target.lUpperArmX = -0.6;
-        target.lUpperArmY =  0.4; target.lLowerArmX = -1.6;
-        target.headY = -0.15;
-        target.spineX = 0.08;
+        /* Sitting on upper-right edge of panel */
+        t.sceneRotZ = -0.08;
+        /* Arms crossed / folded */
+        t.rUAz = 0.6; t.rUAx = -0.4; t.rUAy = -0.3;
+        t.rLAx = -1.4;
+        t.lUAz = -0.6; t.lUAx = -0.4; t.lUAy = 0.3;
+        t.lLAx = -1.4;
+        t.headY = -0.1;
+        t.spineX = 0.05;
       } else if (isVrmHovered && !hasWaved) {
-        /* Energetic wave — right arm raised high, hand waving */
-        target.rUpperArmZ = -2.6;
-        target.rUpperArmX = 0.3;
-        target.rUpperArmY = 0.4;
-        target.rLowerArmZ = Math.sin(elapsed * 10) * 0.5;
-        target.headY = 0.15;
-        target.headX = 0.05;
+        /* One-time wave: right arm raised high */
+        t.rUAz = -1.8;
+        t.rUAx = 0.3;
+        t.rUAy = 0.3;
+        t.rLAz = Math.sin(elapsed * 10) * 0.4;
+        t.headY = 0.1;
+        t.headX = 0.04;
         
-        /* Wave only once per hover interaction */
         if (!window._annaiWaveTimer) {
           window._annaiWaveTimer = setTimeout(() => {
             hasWaved = true;
@@ -373,49 +370,47 @@
       }
 
       /* ── Smooth interpolation (lerp) ── */
-      /* Use slower speed for sleeping/waking transitions for cinematic feel */
-      const speed = (annaiState === 'sleeping' || isTransitioningToSleep) ? 0.035 : 0.06;
+      const sp = (annaiState === 'sleeping' || isTransitioningToSleep) ? 0.03 : 0.06;
 
-      /* Scene-level transforms */
-      vrmModel.scene.rotation.x = THREE.MathUtils.lerp(vrmModel.scene.rotation.x, target.sceneRotX, speed);
-      vrmModel.scene.rotation.z = THREE.MathUtils.lerp(vrmModel.scene.rotation.z, target.sceneRotZ, speed);
-      vrmModel.scene.position.y = THREE.MathUtils.lerp(vrmModel.scene.position.y, target.scenePosY, speed);
-      vrmModel.scene.position.x = THREE.MathUtils.lerp(vrmModel.scene.position.x, target.scenePosX, speed);
+      /* Scene transforms */
+      vrmModel.scene.rotation.x = THREE.MathUtils.lerp(vrmModel.scene.rotation.x, t.sceneRotX, sp);
+      vrmModel.scene.rotation.z = THREE.MathUtils.lerp(vrmModel.scene.rotation.z, t.sceneRotZ, sp);
+      vrmModel.scene.position.y = THREE.MathUtils.lerp(vrmModel.scene.position.y, t.scenePosY, sp);
+      vrmModel.scene.position.x = THREE.MathUtils.lerp(vrmModel.scene.position.x, t.scenePosX, sp);
 
       /* Right arm */
-      if (rightUpperArm) {
-        rightUpperArm.rotation.z = THREE.MathUtils.lerp(rightUpperArm.rotation.z, target.rUpperArmZ, speed);
-        rightUpperArm.rotation.x = THREE.MathUtils.lerp(rightUpperArm.rotation.x, target.rUpperArmX, speed);
-        rightUpperArm.rotation.y = THREE.MathUtils.lerp(rightUpperArm.rotation.y, target.rUpperArmY, speed);
+      if (rUA) {
+        rUA.rotation.z = THREE.MathUtils.lerp(rUA.rotation.z, t.rUAz, sp);
+        rUA.rotation.x = THREE.MathUtils.lerp(rUA.rotation.x, t.rUAx, sp);
+        rUA.rotation.y = THREE.MathUtils.lerp(rUA.rotation.y, t.rUAy, sp);
       }
-      if (rightLowerArm) {
-        rightLowerArm.rotation.z = THREE.MathUtils.lerp(rightLowerArm.rotation.z, target.rLowerArmZ, speed);
-        rightLowerArm.rotation.x = THREE.MathUtils.lerp(rightLowerArm.rotation.x, target.rLowerArmX, speed);
+      if (rLA) {
+        rLA.rotation.z = THREE.MathUtils.lerp(rLA.rotation.z, t.rLAz, sp);
+        rLA.rotation.x = THREE.MathUtils.lerp(rLA.rotation.x, t.rLAx, sp);
       }
 
       /* Left arm */
-      if (leftUpperArm) {
-        leftUpperArm.rotation.z = THREE.MathUtils.lerp(leftUpperArm.rotation.z, target.lUpperArmZ, speed);
-        leftUpperArm.rotation.x = THREE.MathUtils.lerp(leftUpperArm.rotation.x, target.lUpperArmX, speed);
-        leftUpperArm.rotation.y = THREE.MathUtils.lerp(leftUpperArm.rotation.y, target.lUpperArmY, speed);
+      if (lUA) {
+        lUA.rotation.z = THREE.MathUtils.lerp(lUA.rotation.z, t.lUAz, sp);
+        lUA.rotation.x = THREE.MathUtils.lerp(lUA.rotation.x, t.lUAx, sp);
+        lUA.rotation.y = THREE.MathUtils.lerp(lUA.rotation.y, t.lUAy, sp);
       }
-      if (leftLowerArm) {
-        leftLowerArm.rotation.z = THREE.MathUtils.lerp(leftLowerArm.rotation.z, target.lLowerArmZ, speed);
-        leftLowerArm.rotation.x = THREE.MathUtils.lerp(leftLowerArm.rotation.x, target.lLowerArmX, speed);
+      if (lLA) {
+        lLA.rotation.z = THREE.MathUtils.lerp(lLA.rotation.z, t.lLAz, sp);
+        lLA.rotation.x = THREE.MathUtils.lerp(lLA.rotation.x, t.lLAx, sp);
       }
 
       /* Head */
-      if (headBone) {
-        headBone.rotation.x = THREE.MathUtils.lerp(headBone.rotation.x, target.headX, speed);
-        headBone.rotation.y = THREE.MathUtils.lerp(headBone.rotation.y, target.headY, speed);
-        headBone.rotation.z = THREE.MathUtils.lerp(headBone.rotation.z, target.headZ, speed);
+      if (head) {
+        head.rotation.x = THREE.MathUtils.lerp(head.rotation.x, t.headX, sp);
+        head.rotation.y = THREE.MathUtils.lerp(head.rotation.y, t.headY, sp);
+        head.rotation.z = THREE.MathUtils.lerp(head.rotation.z, t.headZ, sp);
       }
 
       /* Spine */
-      if (spineBone) {
-        spineBone.rotation.x = THREE.MathUtils.lerp(spineBone.rotation.x, target.spineX, speed);
-        spineBone.rotation.y = THREE.MathUtils.lerp(spineBone.rotation.y, target.spineY, speed);
-        spineBone.rotation.z = THREE.MathUtils.lerp(spineBone.rotation.z, target.spineZ, speed);
+      if (spine) {
+        spine.rotation.x = THREE.MathUtils.lerp(spine.rotation.x, t.spineX, sp);
+        spine.rotation.z = THREE.MathUtils.lerp(spine.rotation.z, t.spineZ, sp);
       }
     }
 

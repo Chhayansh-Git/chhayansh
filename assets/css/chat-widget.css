@@ -54,10 +54,11 @@
 }
 
 #annai-avatar-container.annai-integrated {
-  /* Position on the OUTER right edge of the chat panel */
-  bottom: 20px;
-  right: 20px;
-  transform: scale(0.85);
+  /* Sit on the upper-right corner of the chat panel */
+  bottom: auto;
+  top: 180px;
+  right: 22px;
+  transform: scale(0.7);
   z-index: 10001;
   pointer-events: none;
 }
