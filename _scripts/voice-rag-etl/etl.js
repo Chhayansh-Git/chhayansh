@@ -35,7 +35,7 @@ if (existsSync(envPath)) {
 }
 
 // ─── Configuration ──────────────────────────────────────────────
-const EMBEDDING_MODEL = 'text-embedding-004'; // 768 dimensions
+const EMBEDDING_MODEL = 'gemini-embedding-001'; // 768 dimensions
 const CHUNK_SIZE = 800;
 const CHUNK_OVERLAP = 100;
 const UPSERT_BATCH = 5;
@@ -112,8 +112,8 @@ function chunkText(text) {
       if (lastBreak > CHUNK_SIZE * 0.3) end = start + lastBreak + 1;
     }
     chunks.push({ text: text.substring(start, end).trim(), offset: start });
+    if (end >= text.length) break;
     start = end - CHUNK_OVERLAP;
-    if (start >= text.length) break;
   }
   return chunks.filter((c) => c.text.length > 0);
 }

@@ -1,31 +1,33 @@
 Identity and Demographics:
-Chhayansh Porwal is a 3rd-year B.Tech student in Computer Science and Engineering at Rajasthan Technical University (RTU), currently holding a CGPA of 8.81. He resides in Kota, Rajasthan. He is a software engineer specializing in native Android architecture, computer vision pipelines, and full-stack machine learning systems. He maintains a rigorous physical fitness routine, running daily and performing home-based circuit workouts to balance the sedentary nature of software development.
-
-Career Objectives:
-Chhayansh is actively preparing his engineering foundation to enter the Japanese tech market as a fresh graduate. He is studying the Japanese language and targeting high-tier technical roles in Tokyo. He values deep engineering fundamentals, preferring to understand system-level APIs and custom software architecture over surface-level framework integrations.
+Chhayansh Porwal is a 3rd-year B.Tech Computer Science Engineering student at Rajasthan Technical University (CGPA: 8.81). He is a Software Engineer specializing in native Android architecture, computer vision pipelines, and full-stack ML systems. His technical philosophy centers on deep engineering fundamentals.
 
 Technical Skills:
 - Mobile Development: Native Android, Kotlin, Jetpack Compose, MVVM Architecture, Room Databases, Background Services.
 - Backend & Full-Stack: Python, FastAPI, Node.js, Next.js, Prisma, Redis.
-- AI & Computer Vision: YOLOv8, MediaPipe FaceMesh, OpenAI CLIP ViT-L/14, PyTorch, 3D Noise2Void, LangChain, SentenceTransformers.
-- Languages & Tools: Python, Kotlin, JavaScript/TypeScript, C++, Git, Docker, MongoDB, PostgreSQL.
+- AI & Computer Vision: YOLOv8, MediaPipe FaceMesh, OpenAI CLIP ViT-L/14, PyTorch, 3D Noise2Void, LangChain, SentenceTransformers, Pinecone, Gemini.
+- Languages & Tools: Python, Kotlin, JavaScript/TypeScript, C++, Git, Docker.
 
-Project: AI Wedding Image Culling System
-Chhayansh developed an automated computer vision pipeline for Fotographiya to curate massive raw photographic datasets. The system ingests event photos and filters them through multiple AI stages. Stage 1 uses Laplacian variance algorithms to discard blurry images. Stage 2 utilizes YOLOv8 to ensure human subjects are present, coupled with MTCNN for facial landmark analysis to discard photos with closed eyes or poor expressions. Stage 3 handles semantic duplication by converting images into vector embeddings using OpenAI's CLIP ViT-L/14; it groups identical shots regardless of camera movement by calculating cosine similarity. The entire inference architecture is orchestrated via Python and FastAPI to handle heavy concurrent tensor operations.
-GitHub Link: https://github.com/chhayanshporwal
+Achievements:
+- Global Rank 2 — AI4Life International Grand Challenge (Calcium Imaging Denoising)
+- Top 8% Nationwide — AlgoUniversity Tech Fellowship (ATF 2025)
+- CGPA: 8.81 — Rajasthan Technical University, B.Tech CSE (Till 5th Semester)
 
 Project: 3D Calcium Imaging Denoising (AI4Life International Grand Challenge)
-Chhayansh secured Global Rank 2 in the AI4Life International Grand Challenge. He developed a production-ready biological image restoration pipeline to denoise live-cell calcium imaging volumetric video. Because clean "ground truth" data does not exist for this cellular microscopy, he implemented a 3D Noise2Void (N2V) self-supervised neural network. Built using PyTorch, the model learns to reconstruct biological structures by predicting masked pixels from surrounding noisy data. He optimized high-dimensional data loaders and spatial tensor augmentations to process massive multi-frame TIFF sequences within GPU memory limits.
-GitHub Link: https://github.com/chhayanshporwal
+Chhayansh secured Global Rank 2 by developing a self-supervised image restoration pipeline to denoise volumetric microscopy data. He utilized a 3D Noise2Void (N2V) neural network in PyTorch. The pipeline mathematically masks random pixels and forces the UNet encoder-decoder architecture to predict missing values based strictly on spatial neighborhoods. He used Docker for deployment.
+GitHub Link: https://github.com/chhayanshporwal/3d-n2v-calcium-denoising.git
 
 Project: CallSentry (Android Application)
-CallSentry is a system-level Android security application built natively in Kotlin. It provides proactive mobile privacy and emergency call breakthrough features. The architecture utilizes Jetpack Compose for the UI, MVVM design patterns for state management, and Room databases for secure local storage. It heavily leverages Android's background services and system-level communication control APIs.
-GitHub Link: https://github.com/chhayanshporwal/CallSentry
+CallSentry is a system-level Android security application built strictly natively in Kotlin. It executes directly within the OS environment using Broadcast Receivers and Notification Listener Services. It drops or silences restricted numbers dynamically and features an Emergency Breakthrough algorithm. It uses Jetpack Compose for UI, MVVM architecture, and an encrypted Room Database.
+GitHub Link: https://github.com/chhayanshporwal/CallSentry.git
+
+Project: AI Wedding Image Culling System
+An automated, high-throughput computer vision pipeline that orchestrates specialized AI models. Stage 1 calculates the variance of the Laplacian to reject blur. Stage 2 uses YOLOv8 to verify human subjects. Stage 3 uses MTCNN to analyze facial landmarks for closed eyes. Stage 4 uses OpenAI's CLIP (ViT-L/14) to generate high-dimensional vector embeddings, computing cosine similarity to cluster identical burst shots based on semantic meaning. The system is wrapped in a FastAPI asynchronous backend.
+GitHub Link: https://github.com/chhayanshporwal/AI-Wedding-Culling-Suite.git
+
+Project: Annai Voice-Enabled RAG Architecture
+A production-grade conversational AI that answers technical questions. A Node.js ETL script chunks markdown files, embeds them via Google's text-embedding-004, and indexes into a Pinecone vector database. The frontend uses a 3D VRM avatar. The backend runs on Vercel Serverless, using Gemini 1.5 Flash for RAG orchestration and conversational memory. It streams multi-tier TTS fallback (ElevenLabs to Google Cloud Neural TTS) audio back to the frontend, syncing with the 3D avatar's skeletal animation.
+GitHub Link: https://github.com/chhayanshporwal/voice-rag-backend.git
 
 Project: AI Teacher Recruitment System
-Chhayansh built a full-stack, three-sided marketplace (Candidate, School, Admin) for educational hiring. The platform uses Next.js and TypeScript for a high-performance frontend and Node.js for backend routing. He integrated an AI-driven matching engine using FastAPI and SentenceTransformers to perform automated resume screening, matching teacher qualifications against school requirements.
-GitHub Link: https://github.com/chhayanshporwal
-
-Project: Project Koma (Manga Production Pipeline)
-A "Human-In-The-Loop" software architecture designed to automate manga production from text descriptions. The pipeline integrates Python, machine learning models, and auto-annotation tools to generate panel layouts and visual content programmatically.
-GitHub Link: https://github.com/chhayanshporwal
+A full-stack web platform with an integrated ML matching engine. The core application logic runs on a Node.js/Prisma backend. A dedicated Python/FastAPI microservice uses SentenceTransformers to generate semantic embeddings of resumes and job descriptions. By calculating the cosine similarity between candidate profiles and job requirements, the system outputs ranked, intelligent matches. Redis is used to cache generated embeddings.
+GitHub Link: https://github.com/chhayanshporwal/teacher-recruitment-system.git
