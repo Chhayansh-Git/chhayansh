@@ -903,6 +903,24 @@
     utterance.rate = 0.95;
     utterance.pitch = 1.05;
 
+    // Try to find a high-quality female voice
+    const voices = window.speechSynthesis.getVoices();
+    if (voices.length > 0) {
+      const preferredVoices = ['Samantha', 'Victoria', 'Karen', 'Moira', 'Tessa', 'Google US English', 'Zira'];
+      let selectedVoice = null;
+      for (const name of preferredVoices) {
+        selectedVoice = voices.find(v => v.name.includes(name) && v.lang.startsWith('en'));
+        if (selectedVoice) break;
+      }
+      // If none of the preferred are found, just try to find ANY female-sounding English voice
+      if (!selectedVoice) {
+        selectedVoice = voices.find(v => (v.name.includes('Female') || v.name.includes('Woman')) && v.lang.startsWith('en'));
+      }
+      if (selectedVoice) {
+        utterance.voice = selectedVoice;
+      }
+    }
+
     utterance.onstart = () => {
       isSpeaking = true;
       updateSpeakerButton();
