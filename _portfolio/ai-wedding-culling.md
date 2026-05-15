@@ -1,5 +1,7 @@
 ---
 title: "AI Wedding Culling System"
+seo_title: "AI Wedding Culling System | YOLOv8, CLIP & MTCNN Computer Vision Pipeline"
+description: "An automated computer vision pipeline using YOLOv8, CLIP ViT-L/14, MTCNN, and FastAPI for high-throughput wedding photo culling, blur detection, and semantic image clustering."
 excerpt: "An AI-powered image processing backend to rapidly evaluate and filter raw wedding photography folders."
 collection: portfolio
 ---

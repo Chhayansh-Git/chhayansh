@@ -1,5 +1,7 @@
 ---
 title: "CallSentry"
+seo_title: "CallSentry | Native Android Security Engineering — Kotlin & Jetpack Compose"
+description: "A native Kotlin Android security application engineered with Jetpack Compose, Room Database, MVVM architecture, and system-level Broadcast Receivers for proactive call privacy and emergency breakthrough."
 excerpt: "A native Android security application engineered for proactive privacy and emergency call breakthrough."
 collection: portfolio
 ---

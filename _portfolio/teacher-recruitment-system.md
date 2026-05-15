@@ -1,5 +1,7 @@
 ---
 title: "AI Teacher Recruitment System"
+seo_title: "AI Teacher Recruitment System | SentenceTransformers, Next.js & Redis ML Platform"
+description: "A full-stack ML-powered recruitment platform built with Next.js, Node.js, Prisma, FastAPI, SentenceTransformers, and Redis for intelligent semantic matching between candidates and schools."
 excerpt: "A full-stack ML-powered recruitment marketplace connecting candidates, schools, and administrators with intelligent matching."
 collection: portfolio
 ---

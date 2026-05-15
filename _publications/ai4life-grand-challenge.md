@@ -1,5 +1,7 @@
 ---
 title: "AI4Life Calcium Imaging Denoising — Global Rank 2"
+seo_title: "AI4Life Grand Challenge Global Rank 2 | PyTorch 3D Noise2Void Denoising"
+description: "Self-supervised 3D Noise2Void denoising pipeline built with PyTorch and Docker for calcium imaging video restoration. Achieved Global Rank 2 in the AI4Life International Grand Challenge."
 collection: publications
 category: competitions
 permalink: /publication/ai4life-grand-challenge

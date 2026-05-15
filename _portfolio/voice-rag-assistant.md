@@ -1,5 +1,7 @@
 ---
 title: "Annai: Voice-Enabled RAG Architecture"
+seo_title: "Annai Voice RAG Assistant | Pinecone, Gemini LLM & Vercel Serverless API"
+description: "A production-grade voice-enabled RAG assistant using Pinecone vector database, Gemini 1.5 Flash LLM, Vercel Serverless Functions, and Google Cloud TTS with a zero-LangChain architecture."
 excerpt: "A scalable, self-aware AI assistant utilizing a Pinecone Vector Database and Vercel Serverless with a highly optimized Zero-LangChain architecture."
 collection: portfolio
 ---

@@ -9,10 +9,10 @@
 # Basic Site Settings
 locale                   : "en-US"
 site_theme               : "default" # The available themes options are "default", "air", "sunrise", "mint", "dirt" and "contrast"
-title                    : "Chhayansh Porwal | Software Engineer & Researcher"
+title                    : "Chhayansh Porwal | AI Enthusiast & Software Developer"
 title_separator          : "-"
 name                     : &name "Chhayansh Porwal"
-description              : &description "Portfolio and research hub of a software engineer specializing in native Android architecture, computer vision pipelines, and full-stack development."
+description              : &description "Software Developer bridging native Android architecture, computer vision pipelines, and full-stack AI architectures."
 url                      : "https://chhayanshporwal.github.io" # Update with your actual domain if you buy one
 baseurl                  : ""
 repository               : "chhayanshporwal/chhayanshporwal.github.io"
@@ -150,7 +150,7 @@ facebook:
   app_id                 :
   publisher              :
 og_image                 :  # Social media default site image
-og_description           :  "Portfolio and research hub of Chhayansh Porwal — native Android, AI/CV pipelines, and full-stack development."
+og_description           :  "Software Developer bridging native Android architecture, computer vision pipelines, and full-stack AI architectures."
 # For specifying social profiles
 # - https://developers.google.com/structured-data/customize/social-profiles
 social:

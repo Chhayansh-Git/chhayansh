@@ -1,6 +1,8 @@
 ---
 layout: archive
-title: "About Me"
+title: "Chhayansh Porwal"
+seo_title: "Chhayansh Porwal | AI Enthusiast & Software Developer"
+description: "Software Developer bridging native Android architecture, computer vision pipelines, and full-stack AI architectures."
 permalink: /
 author_profile: true
 ---
